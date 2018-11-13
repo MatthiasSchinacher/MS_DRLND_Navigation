@@ -342,13 +342,17 @@ for episode in range(1,EPISODES+1):
 			action = np.random.randint(ACTION_SIZE)
 		elif (epsilon >= fone or rs < epsilon):
 			pred_a = modelQ(torch.tensor(state))
+			#print('DEBUG pred_a:',pred_a)
 			tmpmin = float(torch.min(pred_a))
 			tmppred_a = [float(x) - tmpmin + 1e-10 for x in pred_a] 
-			tmpprop = [x**2 for x in tmppred_a]
-			p_sum = float(sum(tmpprop))
+			tmpprob = [x**2 for x in tmppred_a]
+			p_sum = float(sum(tmpprob))
 			tmp = float(1)/p_sum
-			P = np.array(p_array) * tmp
-			action = np.random.choice(action_array,size=ACTION_SIZE,p=P)
+			P = np.array(tmpprob) * tmp
+			#print('DEBUG action_array:',action_array)
+			#print('DEBUG P:',P)
+			action = np.random.choice(action_array,size=None,p=P)
+			#print('DEBUG action:',action)
 		else:
 			pred_a = modelQ(torch.tensor(state))
 			action = int(torch.argmax(pred_a))
