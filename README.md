@@ -70,6 +70,7 @@ Windows INI format (see examples from the command ZIP- archive).
     - save_file: save final Q- model to this file
     - save_best_file: save Q- model from episode with highest score to this file
     - save_transitions_file: save replay-memory transitions to this file
+    - tanh: use Tanh- layers instead of ReLU- layers
 - hyperparameters
     - episodes: number of episodes to run
     - warmup_episodes: epiosodes to run with pure random sampling
@@ -101,6 +102,7 @@ Windows INI format (see examples from the command ZIP- archive).
     save_file = test4.model
     save_best_file = test4.best.model
     save_transitions_file = test4.transitions
+    tanh = False
     
     [hyperparameters]
     episodes           = 1000

@@ -106,6 +106,7 @@ PRIO_REPLAY = False			 # priority replay flag (training only)
 Q_RESET_STEPS = int(50)		 # steps, after which to reset Q_ to Q	(training only)
 GAMMA = float(0.99)			 # gamma- parameter (training only)
 LEARNING_RATE = float(0.001) # (training only)
+MODEL_TANH = False           # Tanh instead of ReLU     
 
 # overwrite defaults
 if 'hyperparameters' in config:
@@ -146,6 +147,8 @@ if 'model' in config:
 	save_file = m['save_file']						   if 'save_file'			  in m else save_file
 	save_best_file = m['save_best_file']			   if 'save_best_file'		  in m else save_best_file
 	save_transitions_file = m['save_transitions_file'] if 'save_transitions_file' in m else save_transitions_file
+	if 'tanh' in m:
+		MODEL_TANH  = True if booleanpattern.match(m['tanh']) else False
 
 # consistency check, reset values not consistent
 if EPSILON_EPISODES <= 0:
@@ -177,6 +180,7 @@ rl.write('# LEARNING_RATE:	   {}\n'.format(LEARNING_RATE))
 rl.write('#	  -- model\n')
 rl.write('# H1: {}\n'.format(MODEL_H1))
 rl.write('# H2: {}\n'.format(MODEL_H2))
+rl.write('# TANH: {}\n'.format(MODEL_TANH))
 rl.write('# load_file: {}\n'.format(load_file))
 rl.write('# load_transitions_file: {}\n'.format(load_transitions_file))
 rl.write('# save_file: {}\n'.format(save_file))
@@ -221,9 +225,9 @@ else:
 
 	modelQ = torch.nn.Sequential(
 		L1
-		,torch.nn.ReLU()
+		,torch.nn.Tanh() if MODEL_TANH else torch.nn.ReLU() 
 		,L2
-		,torch.nn.ReLU()
+		,torch.nn.Tanh() if MODEL_TANH else torch.nn.ReLU() 
 		,L3
 	#	 ,torch.nn.LogSoftmax()
 	)
@@ -240,9 +244,9 @@ else:
 
 	modelQ_ = torch.nn.Sequential(
 		L1_
-		,torch.nn.ReLU()
+		,torch.nn.Tanh() if MODEL_TANH else torch.nn.ReLU() 
 		,L2_
-		,torch.nn.ReLU()
+		,torch.nn.Tanh() if MODEL_TANH else torch.nn.ReLU() 
 		,L3_
 	#	 ,torch.nn.LogSoftmax()
 	)
@@ -343,8 +347,10 @@ for episode in range(1,EPISODES+1):
 		elif (epsilon >= fone or rs < epsilon):
 			pred_a = modelQ(torch.tensor(state))
 			#print('DEBUG pred_a:',pred_a)
-			tmpmin = float(torch.min(pred_a))
-			tmppred_a = [float(x) - tmpmin + 1e-10 for x in pred_a] 
+			tmpmin  = float(torch.min(pred_a))
+			tmpmax  = float(torch.max(pred_a))
+			tmpdiff = tmpmax - tmpmin  
+			tmppred_a = [float(x) + tmpdiff - tmpmin + 1e-10 for x in pred_a] 
 			tmpprob = [x**2 for x in tmppred_a]
 			p_sum = float(sum(tmpprob))
 			tmp = float(1)/p_sum
