@@ -120,7 +120,7 @@ if 'hyperparameters' in config:
     REPLAY_STEPS      = int(hp['replay_steps'])      if 'replay_steps'      in hp else REPLAY_STEPS
     if 'prio_replay' in hp:
         PRIO_REPLAY   = True if booleanpattern.match(hp['prio_replay']) else False
-    Q_RESET_STEPS     = int(hp['replay_steps'])      if 'replay_steps'      in hp else Q_RESET_STEPS
+    Q_RESET_STEPS     = int(hp['q_reset_steps'])     if 'q_reset_steps'     in hp else Q_RESET_STEPS
     GAMMA             = float(hp['gamma'])           if 'gamma'             in hp else GAMMA
     LEARNING_RATE     = float(hp['learning_rate'])   if 'learning_rate'     in hp else LEARNING_RATE
 

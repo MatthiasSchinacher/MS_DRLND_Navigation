@@ -192,3 +192,13 @@ Pictures created with gnuplot from the log-files and used for the project report
 
 ## See also
 * report.pdf: the project report, contains additional information
+
+# Addendum 2018-12-01
+It turned out, that the implementation contained a "bug", in that the "q_reset_steps"- parameter was set
+to the same value as the "replay_steps"- parameter, if the latter was explicitly given in the INI- file.
+
+Thus, effectively I used "q_reset_steps" = 1 without knowing it.
+I fixed the bug, and if one runs the script with the same "test4.ini" as before - where I set "q_reset_steps" to 30
+- I get the following outcome (the target is still reached, but more slowly!):
+
+![My solution "fixed"](test4fixed.png)
